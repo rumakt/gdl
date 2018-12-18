@@ -1,0 +1,3 @@
+rootProject.name = 'gds'
+include 'library'
+

@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'io.karibu'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+}
+
+allprojects {
+    dependencies {
+        testImplementation(
+                'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        )
+        testRuntimeOnly(
+                'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+        )
+    }
+}
+
+sourceSets {
+    componentTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    componentTestImplementation.extendsFrom testImplementation
+    componentTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+task componentTest(type: Test) {
+    testClassesDirs = sourceSets.componentTest.output.classesDirs
+    classpath = sourceSets.componentTest.runtimeClasspath
+
+    shouldRunAfter test
+
+    useJUnitPlatform()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+check.dependsOn(componentTest)
+
+// mark the test dirs in intellij
+idea {
+    module {
+        testSourceDirs += project.sourceSets.componentTest.java.srcDirs
+        testSourceDirs += project.sourceSets.componentTest.resources.srcDirs
+    }
+}
